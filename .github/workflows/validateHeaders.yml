@@ -1,6 +1,7 @@
-# This is a github actions workflow that retrieves the modified hips and runs a validator script against them written in Node.
 name: Validate HIP
-on: [pull_request]
+
+on:
+  pull_request:
 
 permissions:
   contents: read
@@ -14,39 +15,37 @@ jobs:
     runs-on: hiero-improvement-proposals-linux-medium
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@0634a2670c59f64b4a01f0f96f84700a4088b9f0 # v2.12.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 
       - name: Check out repository code
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
       - name: Use Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: "12.x"
+          node-version: "20"
 
-      - name: Install jq
-        run: sudo apt-get install jq
+      - name: Test HIP validator
+        run: npm test
 
       - name: Validate HIPs
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERTESIA_API_KEY: ${{ secrets.VERTESIA_API_KEY }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
-          PR_NUMBER=${{ github.event.pull_request.number }}
-          REPO=${{ github.repository }}
-          PR_DATA=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/$REPO/pulls/$PR_NUMBER/files")
-          MD_FILES=$(echo "$PR_DATA" | jq -r '.[] | select(.filename | test(".md$")) | .filename')
+          git cat-file -e "${BASE_SHA}^{commit}"
 
-          for FILE in $MD_FILES; do
-            FULL_PATH="${{ github.workspace }}/$FILE"
-            if [[ -f "$FULL_PATH" ]]; then
-              node "${{ github.workspace }}/scripts/validateHIP.js" "$FULL_PATH"
-            else
-              echo "No file found for $FILE"
-              exit 1
-            fi
-          done
+          HIP_FILES=()
+          while IFS= read -r -d '' FILE; do
+            HIP_FILES+=("$FILE")
+          done < <(git diff --name-only --diff-filter=ACMR -z "$BASE_SHA" -- ':(glob)HIP/*.md')
+
+          if (( ${#HIP_FILES[@]} == 0 )); then
+            echo "No added or modified HIP files to validate."
+            exit 0
+          fi
+
+          node scripts/validateHIP.js --base-ref "$BASE_SHA" "${HIP_FILES[@]}"

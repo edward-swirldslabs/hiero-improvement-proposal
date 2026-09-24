@@ -1,22 +1,20 @@
 ---
-hip: <HIP number (assigned by the HIP editor), usually the PR number>
-title: <Brief title describing the purpose of the HIP. Ex: "Biometric Binding Codes">
-author: <Comma separated list of the authors' names and/or usernames, or names and emails. Ex: John Doe <@johnDoeGithub1778>, Jane Smith <jane@email.com>>
-working-group: <List of the technical and business stakeholders' names and/or usernames, or names and emails. Ex: John Doe <@johnDoeGithub1778>, Jane Smith <jane@email.com>>
-requested-by: <Name(s) and/or username(s), or name(s) and email(s) of the individual(s) or project(s) requesting the HIP. Ex: Acme Corp <request@acmecorp.com>>
-type: <"Standards Track" | "Informational" | "Process">
-category: <"Core" | "Service" | "Mirror" | "Application">
-needs-hedera-review: <"Yes" | "No">
-hedera-review-date: <Date of Hedera's review in YYYY-MM-DD format>
-hedera-approval-status: <"Approved" | "Rejected">
-needs-hiero-approval: <"Yes" | "No">
-status: <"Draft" | "Review" | "Last Call" | "Active" | "Inactive" | "Deferred" | "Rejected" | "Withdrawn" | "Accepted" | "Final" | "Replaced">
-created: <Date the HIP was created on, in YYYY-MM-DD format>
-discussions-to: <A URL pointing to the official discussion thread. Ex: https://github.com/hiero-ledger/hiero-improvement-proposals/discussions/000>
-updated: <Latest date HIP was updated, in YYYY-MM-DD format.>
-requires: <HIP number(s) this HIP depends on, if applicable. Ex: 101, 102>
-replaces: <HIP number(s) this HIP replaces, if applicable. Ex: 99>
-superseded-by: <HIP number(s) that supersede this HIP, if applicable. Ex: 104>
+hip: 0000 # Assigned by HIP editor.
+title: <The HIP Title> # Keep concise and descriptive.
+author: <list of authors\' real names and GitHub handles, e.g., Jane Doe (@janedoe), John Smith (@johnsmith)>
+working-group: <optional list of key stakeholders\' real names and GitHub handles who are actively involved in shaping the HIP>
+requested-by: <optional name(s) of individual(s), project(s), or organization(s) requesting or sponsoring the HIP>
+discussions-to: <URL of the GitHub Pull Request for this HIP> # This will be filled by the HIP editor upon PR creation.
+type: <Standards Track | Informational | Process> # Refer to HIP-1 for definitions.
+category: <Core | Service | Mirror | Block Node | Application | Process> # Required for Standards Track and Process HIPs. Refer to HIP-1 for category definitions.
+needs-hiero-approval: Yes # Set to Yes if Hiero Technical Steering Committee (TSC) approval is required (typically for Standards Track & Process HIPs). Set to No for Informational HIPs or if not applicable as per HIP-1.
+status: <Draft | Review | Last Call | Approved | Accepted | Final | Active | Deferred | Withdrawn | Stagnant | Rejected | Replaced> # Refer to HIP-1 for status definitions and workflow.
+created: <yyyy-mm-dd> # Date of first submission as a Draft.
+updated: <yyyy-mm-dd> # Date of last modification.
+requires: <optional HIP number(s) that this HIP depends on>
+replaces: <optional HIP number(s) that this HIP renders obsolete>
+superseded-by: <optional HIP number(s) that this HIP is replaced by>
+release: <optional, target release or version number for implementation if applicable>
 ---
 
 ## Abstract
@@ -47,7 +45,7 @@ improvement, or tool will be used by the end user. Template for a user story:
 ## Specification
 The technical specification should describe the syntax and semantics of any new
 features. The specification should be detailed enough to allow competing,
-interoperable implementations for at least the current Hiero ecosystem.
+interoperable implementations for at least the current Hiero ecosystem. Details can include the low level design, and API/Protobuf definition. 
 
 Some specifications are of exceptional size. If your HIP requires detail of
 this level, add the large segments of specification as files of the appropriate
@@ -71,11 +69,29 @@ tokens from the balance of one or more sending account(s) to the balance of
 one or more recipient accounts. The full definition, for clarity, is detailed
 in [an attached file](assets/hip-0000-template/sample.proto).
 
+### Impact on Mirror Node
+Describe impacts, if any, on the Hiero Mirror node.
+
+### Impact on SDK
+Describe Impacts, if any, on the Hiero SDKs
+
 ## Backwards Compatibility
 All HIPs that introduce backward incompatibilities must include a section
 describing these incompatibilities and their severity. The HIP must explain how
 the author proposes to deal with these incompatibilities. HIP submissions
 without a sufficient backward compatibility treatise may be rejected outright.
+
+## Network Optionality
+Hiero is used by many independent networks - public networks such as Hedera as
+well as other public and private (permissioned) deployments - and each network
+decides on its own whether to adopt this functionality. State whether the
+functionality is mandatory for correct operation of a Hiero network or optional,
+how a network can disable, restrict, or configure it (including defaults), and
+what the observable consequences are for clients, mirror nodes, and other
+components if a network does not enable it. Optionality is a recommendation,
+not a requirement - for many changes (consensus-relevant behavior, protocol or
+state changes, security fixes) it is not achievable. In that case simply say so
+and explain why. Refer to HIP-1, "Networks and HIP Adoption".
 
 ## Security Implications
 If there are security concerns in relation to the HIP, those concerns should be
